@@ -1,0 +1,1 @@
+from .domain.models import Ingesoft1User

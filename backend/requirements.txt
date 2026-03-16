@@ -1,4 +1,4 @@
 Django
 djangorestframework
-psycopg2-binary (conector PostgreSQL)
+psycopg2-binary 
 django-cors-headers
