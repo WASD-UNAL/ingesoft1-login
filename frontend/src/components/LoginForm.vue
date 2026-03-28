@@ -1,161 +1,152 @@
 <template>
-    <div class="container">
-        <form class="form" @submit.prevent="handleSubmit">
-            <div class="form-header">
-                <h2>Bienvenido</h2>
-                <p>Ingresa tus datos para continuar</p>
-            </div>
-            <input class="form-input" type="email" placeholder="Correo electrónico" v-model="correo" required/>
-            <input class="form-input" type="password" placeholder="Contraseña" v-model="password" required/>
-            <div v-if="errorMessage" class="error-message">   
-                {{ errorMessage }}
-            </div>
-            <button class="submit-button" type="submit" :disabled="loading">
-                {{ loading ? "Ingresando..." : "Ingresar" }}
-            </button>
-        </form>
-    </div>
+  <div class="login-form-wrapper">
+    <form @submit.prevent="handleSubmit" class="login-form">
+      <h2>Iniciar Sesión</h2>
+      
+      <div class="input-group">
+        <label for="correo">Correo</label>
+        <input 
+          type="email" 
+          id="correo" 
+          v-model="correo" 
+          required 
+          placeholder="tu@correo.com"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          v-model="password" 
+          required 
+          placeholder="********"
+        />
+      </div>
+
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" :disabled="loading" class="submit-btn">
+        {{ loading ? 'Ingresando...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
 </template>
 
-<script>
-    import AuthService from "../services/AuthService"
-    export default{
-        name: "LoginForm",
-        data(){
-            return{
-                correo:"",
-                password:"",
-                loading:false,
-                errorMessage:""
-            };
-        },
-        methods:{
-            async handleSubmit(){
-                this.loading=true;
-                this.errorMessage="";
-                try{
-                    const response = await AuthService.login(this.correo,this.password)
-                        if(response.status === 200 && response.data.success){
-                            this.$emit("login-success",response.data.secret_phrase)
-                        }
-                }catch(error){
-                    if (error.response && error.response.data) {
-                        this.errorMessage = error.response.data.message
-                    } else {
-                        this.errorMessage = "Error al intentar iniciar sesión"
-                    }
-                } finally{
-                    this.loading=false
-                }
-            }
-        }
-    }
+<script setup>
+import { ref } from 'vue';
+import authService from '../services/authService';
+
+const emit = defineEmits(['login-success']);
+
+const correo = ref('');
+const password = ref('');
+const loading = ref(false);
+const errorMessage = ref('');
+
+const handleSubmit = async () => {
+  loading.value = true;
+  errorMessage.value = '';
+
+  try {
+    const response = await authService.login(correo.value, password.value);
+    console.log('Respuesta del backend:', response);
+    emit('login-success', response.secretPhrase);
+    
+  } catch (error) {
+    errorMessage.value = error.message || 'Credenciales inválidas, intenta de nuevo.';
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <style scoped>
-.container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--primary-gradient);
-    padding: 20px;
+.login-form {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
-.form {
-    background-color: var(--white);
-    padding: 48px 40px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    width: 100%;
-    max-width: 450px;
-    box-sizing: border-box;
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1rem;
 }
 
-.form-header {
-    text-align: center;
-    margin-bottom: 8px;
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.form-header h2 {
-    margin: 0 0 8px 0;
-    color: var(--text-main);
-    font-size: 28px;
-    font-weight: 700;
+label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #555;
 }
 
-.form-header p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 15px;
+input {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #333;
+  color: #ddd;
+  transition: all 0.3s ease;
 }
 
-.form-input {
-    padding: 16px;
-    border: 1.5px solid var(--border-light);
-    border-radius: var(--radius-md);
-    font-size: 15px;
-    color: var(--text-main);
-    background-color: var(--bg-color);
-    transition: all 0.25s ease;
-    outline: none;
-    font-family: inherit;
-    box-sizing: border-box;
+
+input:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
 }
 
-.form-input::placeholder {
-    color: var(--text-muted);
+
+input::placeholder {
+  color: #a0a0a0;
 }
 
-.form-input:focus {
-    border-color: #42b983;
-    background-color: var(--white);
-    box-shadow: var(--focus-ring);
+
+.submit-btn {
+  background: linear-gradient(135deg, #66d7d1 0%, #0d9488 100%); /* Nuevo degradado de botón */
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  margin-top: 1rem;
 }
 
-.submit-button {
-    background: var(--button-gradient);
-    color: var(--white);
-    padding: 16px;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    margin-top: 8px;
-    font-family: inherit;
-    box-sizing: border-box;
+.submit-btn:hover:not(:disabled) {
+  opacity: 0.9;
 }
 
-.submit-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.submit-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.submit-btn:disabled {
+  background: #a0a0a0;
+  cursor: not-allowed;
 }
 
 .error-message {
-    background-color: var(--error-bg);
-    color: var(--error-text);
-    padding: 14px;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    border: 1px solid var(--error-border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+  background-color: #fecdd3; 
+  color: #e11d48; 
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid #f9a8d4;
 }
 </style>

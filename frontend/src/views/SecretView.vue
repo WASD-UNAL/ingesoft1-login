@@ -1,33 +1,33 @@
 <template>
-  <div>
-    <SecretDisplay :secretPhrase="secretPhrase" @logout="handleLogout"/>
+  <div class="secret-view">
+    <SecretDisplay 
+      v-if="phrase" 
+      :secretPhrase="phrase" 
+      @logout="handleLogout"
+    />
   </div>
 </template>
 
-<script>
-import SecretDisplay from "../components/SecretDisplay.vue"
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import SecretDisplay from '../components/SecretDisplay.vue';
 
-export default {
-  name: "SecretView",
-  components: {
-    SecretDisplay
-  },
-  data() {
-    return {
-      secretPhrase: ""
-    }
-  },
-  created() {
-    this.secretPhrase = this.$route.params.secretPhrase
+const route = useRoute();
+const router = useRouter();
+const phrase = ref('');
 
-    if (!this.secretPhrase) {
-      this.$router.push({ name: "Login" })
-    }
-  },
-  methods: {
-    handleLogout() {
-      this.$router.push({ name: "Login" })
-    }
+onMounted(() => {
+  const secretParam = route.params.secretPhrase;
+
+  if (!secretParam) {
+    router.push('/');
+  } else {
+    phrase.value = secretParam;
   }
-}
+});
+
+const handleLogout = () => {
+  router.push('/');
+};
 </script>

@@ -1,108 +1,104 @@
 <template>
-    <div class="success-container">
-        <div class="card">
-            <div class="icon">✓</div>
-            <h2>¡Login Exitoso!</h2>
-            <div class="secret-box">{{ secretPhrase }}</div>
-            <button @click="handleLogout">Cerrar sesión</button>
-        </div>
+  <div class="secret-container">
+    <div class="secret-card">
+      <div class="icon-check">✓</div>
+      <h1>¡Login Exitoso!</h1>
+      
+      <p class="instruction">Esta es tu frase secreta guardada en el servidor:</p>
+      
+      <div class="phrase-box">
+        {{ secretPhrase }}
+      </div>
+
+      <button @click="handleLogout" class="logout-btn">
+        Cerrar Sesión
+      </button>
     </div>
+  </div>
 </template>
 
-<script>
-    export default{
-        name:"SecretDisplay",
-        props:{
-            secretPhrase:{
-                type:String,
-                required: true
-            }
-        },
-        methods:{
-            handleLogout(){
-                this.$emit("logout")
-            }
-        }
-    }
+<script setup>
+
+defineProps({
+  secretPhrase: {
+    type: String,
+    required: true
+  }
+});
+
+
+const emit = defineEmits(['logout']);
+
+const handleLogout = () => {
+  emit('logout');
+};
 </script>
 
 <style scoped>
-.success-container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--success-gradient);
-    padding: 20px;
+
+.secret-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  padding: 20px;
 }
 
-.card {
-    background-color: var(--white);
-    padding: 48px 40px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    width: 100%;
-    max-width: 450px;
-    text-align: center;
-    box-sizing: border-box;
+
+.secret-card {
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 450px;
+  width: 100%;
 }
 
-.icon {
-    background-color: var(--success-bg);
-    color: var(--success-text);
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px;
-    font-weight: 700;
+.icon-check {
+  font-size: 4rem;
+  color: #2ecc71;
+  margin-bottom: 1rem;
 }
 
-h2 {
-    margin: 0;
-    color: var(--text-main);
-    font-size: 28px;
-    font-weight: 700;
+h1 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
 }
 
-.secret-box {
-    background-color: var(--bg-color);
-    padding: 24px;
-    border: var(--border-dashed);
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    color: var(--text-main);
-    letter-spacing: 0.5px;
-    word-break: break-all;
-    width: 100%;
-    box-sizing: border-box;
-    font-weight: 500;
+.instruction {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
 }
 
-button {
-    background-color: transparent;
-    color: var(--text-muted);
-    padding: 16px;
-    border: 1.5px solid var(--border-light);
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    width: 100%;
-    font-family: inherit;
-    margin-top: 8px;
+
+.phrase-box {
+  background-color: #f9f9f9;
+  border: 2px dashed #2ecc71;
+  padding: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #27ae60;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  word-break: break-all;
 }
 
-button:hover {
-    color: var(--text-main);
-    border-color: var(--text-muted);
-    background-color: var(--bg-color);
+
+.logout-btn {
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e74c3c;
+  color: white;
 }
 </style>
